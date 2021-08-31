@@ -472,3 +472,98 @@ yarn start
 ### 8.30 日志
 
 ###### 1. 打算先写完 登录和注册页面用antd的组件
+
+###### 2. 今天不再使用实习的git仓库，转而使用github的我的仓库
+
+github项目上传流程 简书 有讲
+
+https://www.jianshu.com/p/c70ca3a02087
+
+###### 3. 今天出现的问题
+
+**使用yarn安装**   
+
+yarn add @types/react-router-dom@^5.1.8
+
+**配置less**
+
+初始步骤，暴露配置文件
+
+```
+yarn eject
+```
+
+第一步：
+
+在webpack.config.js文件(暴露后在config文件夹下)中设置如下:
+
+```
+66行 插入less更改:
+const lessRegex = /\.less$/;
+const lessModuleRegex = /\.module\.less$/;
+500行，插入：
+{
+    test: lessRegex,
+    exclude: lessModuleRegex,
+    use: getStyleLoaders({
+    importLoaders: 3,
+    sourceMap: isEnvProduction
+    ? shouldUseSourceMap
+    : isEnvDevelopment,
+    }, "less-loader"),
+    // Don't consider CSS imports dead code even if the
+    // containing package claims to have no side effects.
+    // Remove this when webpack adds a warning or an error for this.
+    // See https://github.com/webpack/webpack/issues/6571
+    sideEffects: true,
+    },
+    // Adds support for CSS Modules (https://github.com/css-modules/css-modules)
+    // using the extension .module.css
+    {
+    test: lessModuleRegex,
+    use: getStyleLoaders({
+    importLoaders: 3,
+    sourceMap: isEnvProduction
+    ? shouldUseSourceMap
+    : isEnvDevelopment,
+    modules: {
+    getLocalIdent: getCSSModuleLocalIdent,
+    },
+    }, "less-loader"),
+},
+```
+
+第二步：
+
+安装相应的less包
+
+```
+yarn add less less-loader@5.0.0//在这里安装的less-loader的包是低版本 高版本可能存在不兼容的问题
+```
+
+第三步：
+
+配置全部变量（在react-app-env.d.ts文件里加入）
+
+```
+declare module '*.less' {
+  interface Style {
+    [propName: string]: string
+  }
+  const style: Style
+  export default style
+}
+```
+
+第四步：
+
+最好是重新yarn一下，
+
+```
+文件名字为style.module.less
+引入 import style from './style.module.less'
+```
+
+**antd组件的样式问题**
+
+antd的组件无法识别less，所以需要按照原有的模板写css
