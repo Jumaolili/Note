@@ -440,7 +440,7 @@ function Demo3() {
 
        ```
        constructor() {
-               makeAutoObservable(this)
+            makeAutoObservable(this)
        }
        ```
 
@@ -567,3 +567,259 @@ declare module '*.less' {
 **antd组件的样式问题**
 
 antd的组件无法识别less，所以需要按照原有的模板写css
+
+
+
+### 8月31日
+
+###### 1. 经过考虑，沿用之前项目的server模板
+
+###### 2. express mongdb
+
+###### 3. 今天需要完成服务器的初步搭设，以及home页面的书写
+
+###### 4.遇到的问题
+
+
+
+**1. hook组件登陆跳转**
+
+useHistory 钩子允许您访问可能用于导航的历史实例。
+
+[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
+
+**解决**
+
+```
+import { useHistory } from "react-router-dom";
+
+function HomeButton() {
+  let history = useHistory();
+
+  function handleClick() {
+    history.push("/home");
+  }
+
+  return (
+    <button type="button" onClick={handleClick}>
+      Go home
+    </button>
+  );
+}
+```
+
+
+
+### 9月2日
+
+###### 1. 出现的问题
+
+无法解决 react DnD的使用
+
+解决了，但是依旧挂了，悲伤~~
+
+
+
+### 9月5号
+
+今天正式开始做双创的项目，一个人，微信app和PC网页端。
+
+明天做最后一个面试，弄完就埋头做，白天复习。
+
+做完项目后，九月基本结束了，考虑转行了，我可能不适合计算机，也拿不到那么高的工资。
+
+
+
+### 9月9日
+
+### 数据结构是解决问题的过程中使用的容器
+
+在这里我们还要向大家介绍一个概念：**数据结构是缓存**。
+
+| 数据结构                       | 应用场景                                                     |
+| ------------------------------ | ------------------------------------------------------------ |
+| 栈                             | 符合「后进先出」的规律                                       |
+| 队列                           | 符合「先进先出」的规律                                       |
+| 哈希表（散列表）               | 实现「快速存取」数据的功能                                   |
+| 二分搜索树（红黑树、B 树系列） | 维护了一组数据的顺序性，得到一个数据的上下界                 |
+| 并查集                         | 用于处理不相交集合的「动态」连接问题                         |
+| 优先队列                       | 有「动态」添加、删除数据且需要获得最值的场景                 |
+| 字典树（Trie）                 | 用于保存和统计大量的字符串和相关的信息                       |
+| 线段树                         | 处理数组的区间信息的汇总（求和、最值等）、单点更新、区间更新问题 |
+| 树状数组                       | 处理数组的前缀和、单点更新、区间更新问题                     |
+
+### 9月13日
+
+###### 1. 组件内定义变量刷新问题
+
+需要在组件外定义需要的变量，但是如果组件多次引用，将可能存在变量污染问题
+
+
+
+### 9月14日
+
+###### 1. 拖拽组件的传值问题
+
+不知道为什么item里面传的值永远是最开始的state，如果state后面发生了改变，也是传原来的state，奇怪？？
+
+```
+// 使用 useDrag
+    const [, drager] = useDrag(
+        ()=>({
+            type:'Card',
+            item:{type:'Card',title:title,content:content,mark:props.data.mark,father:props.father},
+            collect: (monitor) => ({
+                isDragging: monitor.isDragging(),
+            }),
+            end:(item, monitor)=>{
+                //console.log('end')
+            },
+            isDragging:(monitor)=>{
+                //console.log('dragging')
+            }
+        })
+    )
+```
+
+明明state已经改变了，但是item里面传的值依旧是初始值，可能在拖拽时，**组件估计重新刷新**了。
+
+
+
+
+
+
+
+
+
+###### 2. 父组件触发子组件事件
+
+**函数式和hooks写法**
+其实下面的缺点基本不算缺点了，因为函数式写法，下面算是简单的了。使用forwardRef只会让你的组件定义的更复杂
+
+优点：
+1、写法简单易懂
+2、假如子组件嵌套了HOC，也可以指向真实子组件
+缺点：
+1、需要自定义props属性
+2、需要自定义暴露的方法
+**父组件**
+
+```
+import React from 'react';
+import Child from './Child';
+
+const Parent = () => {
+  let ChildRef = React.createRef();
+
+  function handleOnClick() {
+    ChildRef.current.func();
+  }
+
+  return (
+    <div>
+      <button onClick={handleOnClick}>click</button>
+      <Child onRef={ChildRef} />
+    </div>
+  );
+};
+
+export default Parent;
+
+
+```
+
+**子组件**
+
+```
+import React, { useImperativeHandle } from 'react';
+import { withRouter } from 'react-router-dom';
+
+const Child = props => {
+  //用useImperativeHandle暴露一些外部ref能访问的属性
+  useImperativeHandle(props.onRef, () => {
+    return {
+      func: func,
+    };
+  });
+  function func() {
+    console.log('执行我');
+  }
+  return <div>子组件</div>;
+};
+
+export default withRouter(Child);
+
+
+```
+
+
+
+###### 3. 关于Mobx的问题
+
+```
+import {useLocalObservable, useObserver, Observer} from 'mobx-react';
+import { store } from "./store/store";
+
+let localStore = useLocalObservable(() => store);
+// store.XXX   store.setXXX(XXX)
+```
+
+###### 4. 关于less配合媒体查询
+
+刚开始，可能有点延迟，刷新几次就好了
+
+```
+@media screen {
+    @media (max-width: 762px) {
+        .index {
+            .nav {       
+                background-color: #272A33;
+                img {
+                    width: 182px;
+                    height: 50xpx;
+                }
+            }
+        }
+        
+    }
+}
+```
+
+
+
+### 9月16日
+
+###### 1. 背景图片 铺满
+
+```
+background-size: contain/cover;
+```
+
+注意这个属性
+
+###### 2. 响应式开发最好结合rem，要不然修改px巨特么麻烦
+
+
+
+
+
+### 9月17日
+
+###### 1. 类组件和函数时组件
+
+**类组件** ： 动态组件，一般用于有交互或者数据修改的组件
+
+**函数组件** ： 静态组件，一般用于静态页面数据展示，但在16.8后，react引入了React Hook的setState,就可以编写带有状态的组件
+
+###### 2. 生命周期
+
+componentDidMount和componentWillUnmount是生命周期函数，useEffect作用就是代替他们
+
+```
+React.useEffect(()=>{
+	return ()=>{
+	
+	}
+},[])
+```
+
