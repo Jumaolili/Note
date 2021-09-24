@@ -849,3 +849,129 @@ html {
 }
 ```
 
+
+
+
+
+### 9月21日
+
+###### 1. VS code 调试 javascript代码 
+
+```json
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    
+    "version": "0.2.0",
+    "configurations": [{
+            "name": "谷歌浏览器", //运行html文件，用谷歌浏览器打开
+            "type": "chrome",
+            "request": "launch",
+            "url": "${file}",
+            "sourceMaps": true,
+            "webRoot": "${workspaceRoot}"
+        },
+        {
+            "name": "nodeLauch", //单独调试js，即可以直接运行js
+            "type": "node",
+            "request": "launch",
+            "program": "${file}", //这个配置成你要调试的文件、${file}当前打开的文件
+            "stopOnEntry": false,
+            "args": [],
+            "cwd": "${workspaceRoot}",
+            "runtimeExecutable": null,
+            "runtimeArgs": [
+                "--nolazy"
+            ],
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "console": "internalConsole",
+            "preLaunchTask": "",
+            "sourceMaps": false,
+            "outDir": null
+        }
+    ]
+}
+
+```
+
+
+
+
+
+### 9月23日
+
+###### 1. 高阶组件的简单尝试
+
+```javascript
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { useDrop, DropTargetMonitor } from 'react-dnd';
+import {useLocalObservable, useObserver, Observer} from 'mobx-react';
+
+
+// 高阶组件
+function HOC(WrappedComponent) {
+  return class extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        name: 'new',
+      };
+      this.onChange = this.onChange.bind(this);
+    }
+    
+    onChange = (event) => {
+      this.setState({
+        name: event.target.value,
+      })
+    }
+
+    onClick=(event)=>{
+        alert('hello');
+    }
+    
+    render() {
+		//拦截并重写props,最后注入
+      const newProps = {
+        name: {
+          value: this.state.name,
+          onChange: this.onChange,
+          onClick:this.onClick
+        },
+      };
+      //属性注入
+      return <WrappedComponent {...this.props} {...newProps} />;
+    }
+  };
+}
+
+// 最终我们返回一个被“强化”过后的组件
+@HOC   //重点步骤
+class Example extends React.Component {
+  render() {
+    return <input name="name" {...this.rops.name} />;
+  }
+}
+
+export default Example
+
+
+```
+
+
+
+
+
+
+
+### 9月24日
+
+###### 1. 弄清楚Hooks函数的生命周期
+
+###### 2. 完成Login的编写
+
+###### 3. 完成Register页面的部分（也许）
+
