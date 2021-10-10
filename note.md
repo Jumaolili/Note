@@ -448,7 +448,7 @@ function Demo3() {
 
 ###### 3. Axios
 
-axios极大的简化了http请求的程序，并且与fetch相比，没有出现跨域请求失败的现象。
+axios极大的简化了http请求的程序，并且与fetch相
 
 ### 8.28 日志
 
@@ -979,5 +979,545 @@ export default Example
 
 
 
-### 9月27日
+### 9月28日
+
+###### 1. Context 的使用
+
+```javascript
+// context方式实现跨级组件通信 
+// Context 设计目的是为了共享那些对于一个组件树而言是“全局”的数据
+const BatteryContext = createContext();
+//  子组件的子组件  
+class GrandChild extends Component {
+    render(){
+        return (
+            <BatteryContext.Consumer>
+                {
+                    color => <h1 style={{"color":color}}>我是红色的:{color}</h1>
+                }
+            </BatteryContext.Consumer>
+        )
+    }
+}
+//  子组件
+const Child = () =>{
+    return (
+        <GrandChild/>
+    )
+}
+// 父组件
+// 使用创建的 BatteryContext，创建BatteryContext.Provider标签，在该标签内，所有组件共享 value中的变量 { color }
+class Parent extends Component {
+      state = {
+          color:"red"
+      }
+      render(){
+          const {color} = this.state
+          return (
+          <BatteryContext.Provider value={color}>
+              <Child></Child>
+          </BatteryContext.Provider>
+          )
+      }
+}
+
+```
+
+
+
+
+
+### 9月29日
+
+###### 1.  Axios 的跨域问题
+
+没有解决....
+
+换成fetch了，原来解决过fetch的问题。
+
+
+
+
+
+
+
+### 10月2日
+
+###### 1.  子路由跳转问题
+
+**1、React路由介绍**
+
+**1.1、单页面应用**
+
+单页面得特点：只需要加载一次主页面，通过局部刷新，就可以实现跳转或者切换页面
+
+优点：加载速度快，用户体验比较好
+
+缺点：
+
+- 第一次加载比传统要慢一点
+- 不利seo
+- 页面相对复杂
+- 返回键
+
+**1.2、安装react-router-dom**
+
+在项目命令行中，执行
+
+```
+cnpm install react-router-dom -S
+```
+
+下载到生产环境的依赖中。
+
+在组件中通过对象的解构方式去获取到`react-router-dom`内置组件，在组件中，按需引入内置组件，在页面中进行使用：
+
+- HashRouter表示一个路由的根容器，将来所有的路由相关的东西，都要包裹在HashRouter里面，而且一个网站中，只需要使用一次HashRouter就好了；
+- Route表示一个路由规则，在Route上，有两个比较重要的属性，path，component
+- Link表示一个路由的链接，属性to
+
+```
+import {HashRouter,Route,Link} from 'react-router-dom'
+复制代码
+```
+
+代码示例：
+
+```tsx
+render(){
+        return (
+            <HashRouter>
+                <div>
+                    <h1>这是网站的根目录</h1>
+                    <hr />
+                    <Link to="/home">首页</Link>&nbsp;&nbsp;
+                    <Link to="/movie/">电影</Link>&nbsp;&nbsp;
+                    <Link to="/about">关于</Link>
+                    <hr />
+                    <Route path="/home" component={Home} ></Route><hr/>
+                    <Route path="/movie" component={Movie} exact></Route><hr/>
+                    <Route path="/about" component={About}></Route><hr/>
+                </div>
+            </HashRouter>
+        );
+    }
+
+```
+
+当使用HashRouter把APP根组件的元素包裹起来之后，网站就已经启用路由了，在一个HashRouter中，只能有唯一的一个根元素。 在一个网站中，只需要使用唯一的一次`<HashRouter></HashRouter>`就行了。
+
+Route创建的标签，就是路由规则，其中path表示要匹配的路由，component表示要展示的组件。Route具有两种身份：1.它是一个路由匹配规则；2.它是一个占位符，表示将来匹配到的组件都放到这个位置
+
+需要注意的地方
+
+- Route 组件path地址是以/开头 ，配置component属性，是显示的组件，这个属性不可以大写
+- Route组件可以单双标签使用，单标签需要/结尾，双标签不可以在中间写入别的东西
+- Link to属性的地址也是/开头，Link在页面渲染的是a标签
+
+作者：柯晓楠
+链接：https://juejin.cn/post/6844904111691792398
+
+
+
+
+
+
+
+###### 2. 子路由 子组件样式问题
+
+```js
+<NavLink
+  to="/faq"
+  activeClassName="selected"
+>FAQs</NavLink>
+//换成NavLink就行了
+
+```
+
+##### `activeClassName`
+
+当某个 route 是激活状态时，`<Link>` 可以接收传入的 className。失活状态下是默认的 class。
+
+##### `activeStyle`
+
+当某个 route 是激活状态时，可以将样式添加到链接元素上。
+
+但是Link好像更新了，不支持这两个，**需要换成最新的NavLink**
+
+
+
+### 10月7日
+
+###### 1.  导出interface类的问题
+
+```typescript
+//interface.ts
+
+export interface Login_data {
+    email:string,
+    password:string
+}
+```
+
+
+
+###### 2. TS 里面 传函数arguments问题
+
+策略模式
+
+```typescript
+function stragegyFactory(checkList:any[]){    //检查策略组工厂
+    let output:any=[];
+    let index=1;
+    if(!Array.isArray(checkList)){
+        output.push({
+            status:false,
+            msg:'策略组checkList参数需要为数组'
+        });
+        return output;
+    }
+    for(let i in checkList){
+        //分离策略组，策略和结果
+        //执行每个策略组
+        let check=checkList[i];
+        if(!Array.isArray(check)){
+            output.push({
+                status:false,
+                msg:'策略组checkList中每一项需要为数组[fn,...args]'
+            });
+            return output;
+        }
+        let fn=check[0];
+        let result;
+        let args;
+        if(typeof fn !== 'function') {
+            output.push({
+                status:false,
+                msg:`策略组第${index}项[fn,...args],fn必须为函数`
+            });
+            return output;
+        }
+        args=Array.prototype.slice.call(check,1)
+        result=fn(...args);   
+        if(typeof result == 'boolean'){
+            let bool = result;
+            result = {
+                status: bool,
+                msg:bool ? '' : `第${index}个策略没有通过`
+            }
+        }
+        output.push(result);
+        index++;
+    }
+    return output
+}
+
+```
+
+
+
+###### 3. 阻止子组件无意义刷新--memo
+
+
+
+
+
+### 10月8日
+
+###### 1.  判断是否存在循环引用
+
+```javascript
+let a={
+  student:null
+}
+
+let b= {
+  teacher:1
+}
+a.student=b;
+
+//JSON error
+function isCircle(obj) {
+  try {
+    JSON.stringify(obj);
+  } catch (error) {
+    return true
+  }
+  return false
+}
+
+//Map
+function isCircle_2(obj) {
+  let parent=obj;
+  let result=false;
+  function check(obj) {
+    if(result==true) return result;
+    for(let i in obj){
+      if(typeof obj[i] == 'object'){
+        if(obj[i]==parent){
+          result = true;
+        }
+        check(obj[i]);
+      }
+    }
+  }
+  check(obj);
+  return result;
+}
+
+
+console.log(isCircle_2(a));
+```
+
+
+
+
+
+### 10月8日
+
+###### 1. 是否可以自己做一个云盘？
+
+###### 2. 细小的知识点
+
+  1.
+
+```html
+<a>
+	<img src='' title=''/>
+    <p></p>
+</a>
+a标签内部可以放很多东西
+```
+
+2. symbol 不可被枚举
+3. 表格的 cellspacing属性、col标签、colspan属性、rowspan属性
+
+
+
+###### 3. 接昨天的问题
+
+之所以每次输入都会导致Model的刷新是因为，父组件（Login）的state改变了，所以引起页面刷新，那么Model（子组件）也会刷新。
+
+
+
+```typescript
+const isEqual = (prevProps:any, nextProps:any) => {
+    if (prevProps.msg !== nextProps.msg) {
+        return true;
+    }
+    return false;
+}
+
+
+const Model_Fail_1 = React.memo(Model,isEqual)
+
+
+export default Model_Fail_1;
+```
+
+但是，还是发生了刷新？？？
+
+函数式组件果然还是由局限性问题
+
+
+
+###### 4. 不能在fetch的参数里面拼接字符串，会报错
+
+```typescript
+await fetch(`${request.baseURL}+${url}+${search}`,{
+            method: 'GET', // or 'PUT'
+            headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+            },
+            mode: 'no-cors'
+        })
+```
+
+
+
+###### 5. [typescript提示implicitly has an 'any' type，这个怎么解决？](https://segmentfault.com/q/1010000016082181)
+
+不知道”有三种情况：
+
+- 我不知道它具体是什么，但它一定有某某属性：用字面量声明类型，`{ x: string }`
+- 我不确定它有什么属性，之后我会用`if`再仔细判断：声明为`unknown`类型
+- 我自己有数，你别管了：声明为`any`类型
+
+解决办法？
+
+**tsconfig.json 中 添加"noImplicitAny": false,**
+
+
+
+###### 6.  为什么编写的节流化函数会失效
+
+猜想（正确）
+
+当操作时同步且不会更改state的时候，节流函数生效；但是一旦更改state，引发刷新，则会使定时器刷新
+
+
+
+
+
+### 10月10日
+
+###### 1. 任务须知：
+
+ 	1. 阅读 React 开发文档
+ 	2. 看网课学习 Node 的库 Koa，学会编写后端代码
+ 	3. 计算机网络 
+ 	4. 浏览器原理
+ 	5. 浏览器 插件制作 脚本编写
+ 	6. LeeCode 算法
+ 	7. **需要在10月17日前完成 项目前端页面代码** 
+
+
+
+
+
+###### 2. 阅读 React 开发文档
+
+先从简单的教程开始回顾,在12：00之前完成简单教程
+
+**井字棋，五子棋是滑动窗口问题**
+
+```javascript
+Tools={
+    chessWin:function(x,y,list) {
+        //1. 定义滑动窗口
+        //2. 水平 垂直 斜向 
+        //3. 满足就返回win
+
+        let cache =[list[x][y]];
+        let temp_x=x,temp_y=y;
+        //水平 改变y 
+        while (temp_y>0&&cache.length<3&&list[x][temp_y-1]===list[x][y]) {
+            cache.push(list[x][temp_y-1]);
+            temp_y--;    
+        }
+        if(cache.length==3){
+            return true;
+        }else{
+            temp_y=y;
+        }
+        while ((temp_y<list[x].length-1)&&cache.length<3&&list[x][temp_y+1]===list[x][y]) {
+            cache.push(list[x][temp_y+1]);
+            temp_y++;    
+        }
+        if(cache.length==3){
+            return true;
+        }else{
+            temp_y=y;
+        }
+        cache =[list[x][y]];
+
+        //垂直 改变x
+        while (temp_x>0&&cache.length<3&&list[temp_x-1][y]===list[x][y]) {
+            cache.push(list[temp_x-1][y]);
+            temp_x--;    
+        }
+        if(cache.length==3){
+            return true;
+        }else{
+            temp_x=x;
+        }
+        while ((temp_x<list.length-1)&&cache.length<3&&list[temp_x+1][y]===list[x][y]) {
+            cache.push(list[temp_x+1][y]);
+            temp_x++;    
+        }
+        if(cache.length==3){
+            return true;
+        }else{
+            temp_x=x;
+        }
+        cache =[list[x][y]];
+
+        //斜向 x,y同增同减 (\)
+        while (list[temp_x-1]&&list[temp_x-1][temp_y-1]&&temp_y>0&&temp_x>0&&cache.length<3&&list[temp_x-1][temp_y-1]===list[x][y]) {
+            cache.push(list[temp_x-1][temp_y-1]);
+            temp_x--;
+            temp_y--;    
+        }
+        if(cache.length==3){
+            return true;
+        }else{
+            temp_x=x;
+            temp_y=y;
+        }
+        while (list[temp_x+1]&&(temp_y<list[temp_x+1].length-1)&&(temp_x<list.length-1)&&cache.length<3&&list[temp_x+1][temp_y+1]===list[x][y]) {
+            cache.push(list[temp_x+1][temp_y+1]);
+            temp_y++;
+            temp_x++;    
+        }
+        if(cache.length==3){
+            return true;
+        }else{
+            temp_x=x;
+            temp_y=y;
+        }
+        // 斜向 （/）
+        while (list[temp_x+1]&&list[temp_x+1][temp_y-1]&&temp_y>0&&temp_x<list.length-1&&cache.length<3&&list[temp_x+1][temp_y-1]===list[x][y]) {
+            cache.push(list[temp_x+1][temp_y-1]);
+            temp_x++;
+            temp_y--;    
+        }
+        if(cache.length==3){
+            return true;
+        }else{
+            temp_x=x;
+            temp_y=y;
+        }
+        while (list[temp_x-1]&&(temp_y<list[temp_x-1].length-1)&&(temp_x>0)&&cache.length<3&&list[temp_x-1][temp_y+1]===list[x][y]) {
+            cache.push(list[temp_x-1][temp_y+1]);
+            temp_y++;
+            temp_x--;    
+        }
+        if(cache.length==3){
+            return true;
+        }else{
+            return false;
+        }
+    }
+}
+
+console.log(Tools.chessWin(2,0,[['1','','1'],['','1',''],['1','','1']]));
+
+```
+
+
+
+###### 3. 关于setState的同步异步问题
+
+```typescript
+putChess(x:number,y:number) {
+        //get id
+
+    if(this.state.chess_all[x][y]!=''){
+        return console.log('不能走那个位置');
+    }
+    this.state.chess_all[x][y]=this.state.chess_current;
+    this.switchChess();
+    //判断
+    this.checkWin(x,y,this.state.chess_all);
+    setTimeout(() => {
+        this.props.getCurrent(this.state.chess_current); // 语句
+    }, 0);
+    //如果不把‘语句’放在setTimeout里面，就不能在switchChess更改state后，得到更改后的state
+        
+}
+```
+
+由此推断出，setState有异步的时候，所以将
+
+```
+ this.props.getCurrent(this.state.chess_current); // 语句
+```
+
+放在setTimeout里面，才能保证得到更改后state的值
+
+
+
+###### 4. 开始学习node库  Koa.js
+
+
 
