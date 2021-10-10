@@ -1379,6 +1379,8 @@ await fetch(`${request.baseURL}+${url}+${search}`,{
 
 先从简单的教程开始回顾,在12：00之前完成简单教程
 
+**还是Class 组件香**
+
 **井字棋，五子棋是滑动窗口问题**
 
 ```javascript
@@ -1519,5 +1521,160 @@ putChess(x:number,y:number) {
 
 ###### 4. 开始学习node库  Koa.js
 
+```
+app.use()
+```
 
+app.use 后面接一个中间件，有且只有一个。且注册的中间件要为函数
+
+
+
+**项目优化，自动重启服务**
+
+
+
+项目的基本优化：1. 自动重启配置
+
+安装nodemon工具
+
+```
+npm i nodemon
+```
+
+在package.json 中编写启动脚本
+
+```javascript
+"scripts": {
+    "dev": "nodemon ./src/main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+```
+
+
+
+**读取配置文件**
+
+```
+cd ../  返回上一级
+```
+
+安装 dotenv
+
+```
+npm i dotenv
+```
+
+在根目录安装dotenv
+
+在src新建config文件夹，新建 **.env** 后缀的文件，新建config.default.js文件
+
+.env
+
+```
+APP_PORT = 8000 
+```
+
+config.default.js
+
+```javascript
+const dotenv = require('dotenv');
+const result = dotenv.config(); //这一步自动将 .env 中自定义的环境配置 与 process.env 合并
+
+module.exports = result.parsed; //但我们只导出parsed 
+
+```
+
+但是还是有问题
+
+
+
+
+
+**使用Koa-router**
+
+1. 导入包
+2. 实例化对象
+3. 编写路由
+4. 注册中间件
+
+
+
+```javascript
+var Koa = require('koa');
+var Router = require('koa-router');
+
+var app = new Koa();
+var router = new Router();
+
+router.get('/', (ctx, next) => {
+  // ctx.router available
+});
+
+app
+  .use(router.routes())
+  .use(router.allowedMethods());
+```
+
+
+
+```
+var router = new Router({
+  prefix: '/users'
+});
+
+router.get('/', ...); // responds to "/users"
+router.get('/:id', ...); // responds to "/users/:id"
+```
+
+
+
+**路由拆分**
+
+user.route.js
+
+```javascript
+const Router = require('koa-router');
+
+const router = new Router({
+    prefix: '/users'
+})
+
+//GET /users
+router.get('/',(ctx,next)=>{
+    ctx.body = 'hello users';
+})
+
+module.exports = router;
+```
+
+
+
+main.js
+
+```
+const userRouter = require('./route/user.route');
+...
+
+app.use(userRouter.routes)
+```
+
+
+
+
+
+###### 5. react报错 TypeError: Cannot read property 'setState' of undefined
+
+```javascript
+class A {
+  constructor() {
+    this.a = this.a.bind(this)
+  }
+ 
+  a() {}
+ 
+  // or
+  @bindthis
+  b() {}
+}
+```
 
